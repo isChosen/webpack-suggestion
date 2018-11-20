@@ -15,7 +15,7 @@ module.exports = {
     // 也就是 entry 中配置的 react 和 polyfill, etc
     filename: '[name].dll.js',
     path: path.resolve(__dirname, 'dist/dll'),
-    // 存放动态链接库的全局变量名称, 例如对于 react 来时就是 _dll_react,  加上 _dll_ 防止全局变量冲突
+    // 存放动态链接库的全局变量名称, 例如对于 react 来说就是 _dll_react,  加上 _dll_ 防止全局变量冲突
     library: '_dll_[name]'
   },
   plugins: [

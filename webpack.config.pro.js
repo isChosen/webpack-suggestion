@@ -157,7 +157,7 @@ module.exports = {
     // 分离 css
     new MiniCssExtractPlugin({
       filename: 'static/css/[name][contenthash:6].css',
-      chunkFilename: 'static/css/[id][contenthash:6].css' // 供应商(vendor)样式文件
+      chunkFilename: 'static/css/[name][contenthash:6].css' // 供应商(vendor)样式文件
     }),
     // 压缩分离的 css
     new OptimizeCssAssetsPlugin({

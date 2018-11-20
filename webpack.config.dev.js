@@ -24,7 +24,7 @@ module.exports = {
   entry: './src/index.jsx',
   output: {
     filename: 'bundle/[name].bundle[hash:6].js',
-    chunkFilename: 'bundle/[name].[chunkhash:6].js', // 'bundle/[id].bundle[chunkhash:6].js'
+    chunkFilename: 'bundle/[name].bundle[chunkhash:6].js', // 'bundle/[id].bundle[chunkhash:6].js'
     path: path.resolve(__dirname, 'dist'), // 打包后的目录，必须是绝对路径
     publicPath: '/' // 静态资源路径
   },
@@ -142,7 +142,7 @@ module.exports = {
     // 分离 css
     new MiniCssExtractPlugin({
       filename: 'static/css/[name][contenthash:6].css',
-      chunkFilename: 'static/css/[id][contenthash:6].css' // 供应商(vendor)样式文件
+      chunkFilename: 'static/css/[name][contenthash:6].css' // 供应商(vendor)样式文件
     }),
     // 模板
     new HtmlWebpackPlugin({

@@ -1,7 +1,7 @@
 1. **前言**
     * 本篇文章介绍时下前端最火热的模块化打包工具 webpack，配合 react 演示搭建前端单页面应用项目的基本配置和讲解各项配置的具体作用。进一步介绍如何优化 webpack 配置，提升项目的打包速度、网页的加载速度、可视化分析项目所依赖的模块，实现所谓的性能优化。如果理解了本文介绍的全部内容，相信也能顺利扩展到 angular 或 vue 等其他框架。而且还不会 react 的朋友，看完本文后应该对 react 也会有一个基本的认识！
-    * 本文讲解步骤如下 (最好对应版本号，避免莫名 BUG)：
-        * **基本配置**
+    * 本文讲解步骤如下(最好对应版本号，避免莫名 BUG)：
+        * **<span  style="color: #3300FF; ">基本配置</span>**
             - 版本:
                 * node 10.13.0
                 * npm 6.4.1
@@ -12,15 +12,15 @@
                 * react-dom 16.5.2
                 * react-router 3.2.1
                 * react-router 4(扩展)
-            - **<span  style="color: #AE87FA; ">webpack-primary</span>** 最基本的配置：最基本最简单的配置；
-            - **<span  style="color: #AE87FA; ">webpack-integrate</span>** 整合相关配置：
+            - [**<span  style="color: #AE87FA; ">webpack-primary</span>**](#webpack_primary) 最基本的配置：最基本最简单的配置；
+            - [**<span  style="color: #AE87FA; ">webpack-integrate</span>**](#webpack_integrate) 整合相关配置：
                 * 相关加载器 loader
                 * 相关插件 plugin
                 * 样式模块化 CSS-Modules
                 * 本地服务和代理方式：
                     * webpack-dev-server
                     * webpack-dev-middleware
-        * **优化配置** (换成H5页面-满脑子都是骚操作)
+        * **<span  style="color: #3300FF; ">优化配置</span>** (换成H5页面-满脑子都是骚操作)
             - **<span  style="color: #AE87FA; ">webpack-split</span>** 提取公共代码：
                 * 优化层面: Development Production
                 * 原理: 抽离代码块 chunk, 利用浏览器缓存
@@ -58,32 +58,99 @@
                 * Dev： webpack.config.dev.whole.js
                 * Pro： webpack.config.pro.whole.js
 ***
-	1. webpack-primary
+2. <a id="webpack_primary">**webpack-primary**</a>
+    * package.json 依赖包如下：
+```json
+	{
+      "name": "webpack-primary",
+      "version": "1.0.0",
+      "description": "",
+      "main": "index.js",
+      "keywords": [],
+      "author": "Detcx",
+      "license": "ISC",
+      "devDependencies": {
+        "@babel/core": "^7.1.5",
+        "@babel/preset-env": "^7.1.5",
+        "@babel/preset-react": "^7.0.0",
+        "babel-loader": "^8.0.4",
+        "html-webpack-plugin": "^3.2.0",
+        "webpack": "^4.25.1",
+        "webpack-cli": "^3.1.2",
+        "webpack-dev-server": "^3.1.10"
+      },
+      "dependencies": {
+        "react": "^16.5.2",
+        "react-dom": "^16.5.2"
+      },
+      "scripts": {
+        "build": "rimraf dist && webpack --config webpack.config.js",
+        "server": "webpack-dev-server"
+      }
+	}
+``` 
+  * 注意: rimraf 是我全局安装的一个清理文件的 npm 包，跟 linux 中 rm -rf 命令差不多。
+  * webpack4+ 配置项
+    * mode: 环境设置，开发环境用 development，生产环境用 production，环境的不同构建出来的文件名也会有所差别，比如，以 chunkFilename 构建出来的块文件名；
+    * entry: 入口，即 webpack 从此文件开始寻找各种依赖的模块；
+    * output: 出口，配置输出文件名(filename)，文件块名(chunkFilename)，输出路径(path)，静态资源路径(publicPath-一般是域名目录)；
+    * module: 加载器，一系列规则都是用来编译模块的，比如 jsx 语法就用 babel-loader，模块中有外部样式文件就用 css-loader 和其他像 style-loader 等一起完成编译模块任务，etc；
+    * devServer: 本地服务器，用作平时本地开发调试使用；
+    * resolve: 配置模块的解析方式，比如 extensions 表示扩展名，如果引入的模块扩展名在 extensions 中，可以省略其后缀；
+    * plugins: 功能强大的插件配置。
 
+```javascript
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+module.exports = {
+	mode: 'development', // development production
+	entry: './src/index.jsx', // 入口， 可以有多个
+	output: {
+		filename: '[name].bundle.js',
+		chunkFilename: '[name].[chunkhash:6].js',
+		path: path.resolve(__dirname, 'dist'),
+		publicPath: '/'
+	},
 
-		* package.json 依赖包如下：
+	module: {
+		rules: [
+			{
+				test: /\.(jsx?|es6)$/,
+				exclude: /node_modules/,
+				use: 'babel-loader'
+			}
+		]
+	},
 
-{    "name": "webpack-primary",    "version": "1.0.0",    "description": "",    "main": "index.js",    "keywords": [],    "author": "Detcx",    "license": "ISC",    "devDependencies": {        "@babel/core": "^7.1.5",        "@babel/preset-env": "^7.1.5",        "@babel/preset-react": "^7.0.0",        "babel-loader": "^8.0.4",        "html-webpack-plugin": "^3.2.0",        "webpack": "^4.25.1",        "webpack-cli": "^3.1.2",        "webpack-dev-server": "^3.1.10"    },    "dependencies": {        "react": "^16.5.2",        "react-dom": "^16.5.2"    },    "scripts": {        "build": "rimraf dist && webpack --config webpack.config.js",        "server": "webpack-dev-server"    }}
+	devServer: {
+		open: true, // 启动后打开浏览器
+		port: '8034',
+		https: false, // 用 http
+		publicPath: '/',
+		contentBase: path.resolve(__dirname, 'dist'), // 本地服务器的根目录
+		host: 'localhost'
+	},
 
-		* 注意: rimraf 是我全局安装的一个清理文件的 npm 包，跟 linux 中 rm -rf 命令差不多。
-		* webpack4+ 配置
+	resolve: {
+		modules: [path.resolve(__dirname, 'node_modules')], // 第三方模块路径
+		extensions: ['.js', '.jsx', '.es6'] // 扩展名，尽量少写，且越靠前越优先匹配
+	},
 
-			* mode: 环境设置，开发环境用 development，生产环境用 production，环境的不同构建出来的文件名也会有所差别，比如，以 chunkFilename 构建出来的块文件名；
-			* entry: 入口，即 webpack 从此文件开始寻找各种依赖的模块；
-			* output: 出口，配置输出文件名(filename)，文件块名(chunkFilename)，输出路径(path)，静态资源路径(publicPath-一般是域名目录)；
-			* module: 加载器，一系列规则都是用来编译模块的，比如 jsx 语法就用 babel-loader，模块中有外部样式文件就用 css-loader 和其他像 style-loader 等一起完成编译模块任务，etc；
-			* devServer: 本地服务器，用作平时本地开发调试使用；
-			* resolve: 配置模块的解析方式，比如 extensions 表示扩展名，如果引入的模块扩展名在 extensions 中，可以省略其后缀；
-			* plugins: 功能强大的插件配置。
+	plugins: [
+		new HtmlWebpackPlugin({ // 模板插件
+			filename: 'index.html', // 输出的文件名
+			title: 'webpack-基本配置',
+			favicon: __dirname + '/favicon.ico',
+			template: __dirname + '/index.html'
+		})
+	]
+}
+```
+  * 注意: 我用的是 **yarn**(下载 yarn-[version].msi 管理员模式的命令行安装 yarn). 执行命令 **yarn build** 或者 **yarn server**。
+		* webpack-primary 详细代码地址：[点击查看](https://github.com/isChosen/webpack-primary)，欢迎下载查看，**star** 一下，感激不尽！
 
-const path = require('path');const HtmlWebpackPlugin = require('html-webpack-plugin');module.exports = {    mode: 'development', // development production    entry: './src/index.jsx', // 入口， 可以有多个    output: {        filename: '[name].bundle.js',        chunkFilename: '[name].[chunkhash:6].js',        path: path.resolve(__dirname, 'dist'),        publicPath: '/'    },    module: {        rules: [            {                test: /\.(jsx?|es6)$/,                exclude: /node_modules/,                use: 'babel-loader'            }        ]    },    devServer: {        open: true, // 启动后打开浏览器        port: '8034',        https: false, // 用 http        publicPath: '/',        contentBase: path.resolve(__dirname, 'dist'), // 本地服务器的根目录        host: 'localhost'    },    resolve: {        modules: [path.resolve(__dirname, 'node_modules')], // 第三方模块路径        extensions: ['.js', '.jsx', '.es6'] // 扩展名，尽量少写，且越靠前越优先匹配    },    plugins: [        new HtmlWebpackPlugin({ // 模板插件            filename: 'index.html', // 输出的文件名            title: 'webpack-基本配置',            favicon: __dirname + '/favicon.ico',            template: __dirname + '/index.html'        })    ]}
-
-		* 注意: 我用的是 yarn(下载 yarn-[version].msi 管理员模式的命令行安装 yarn). 执行命令 yarn build 或者 yarn server。
-		* webpack-primary 详细代码地址：https://github.com/isChosen/webpack-primary，欢迎下载查看，star 一下，感激不尽！
-
-
-	1. webpack-integrate
+	3. <a id="webpack_integrate">**webpack-integrate**</a>
 
 
 

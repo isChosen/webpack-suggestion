@@ -18,7 +18,7 @@
 *.sublime-workspace
 
 # IDE - VSCode
-.vscode/*
+.vscode
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -44,3 +44,4 @@ Thumbs.db
 # log
 debug.log
 yarn-error.log
+yarn.lock

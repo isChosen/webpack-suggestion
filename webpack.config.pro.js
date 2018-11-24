@@ -2,7 +2,7 @@
  * @Author: Detcx 
  * @Date: 2018-11-20 15:15:56 
  * @Last Modified by: Detcx
- * @Last Modified time: 2018-11-20 17:39:13
+ * @Last Modified time: 2018-11-24 14:49:34
  * @description configuration
  */
 
@@ -231,7 +231,7 @@ module.exports = {
     // 复制静态资源
     new CopyWebpackPlugin([
       {
-        from: 'static/css/',
+        from: 'static/css/*.min.css',
         to: 'static/css/[name].[ext]',
         toType: 'template'
       },
